@@ -223,6 +223,7 @@ const LoginPage = (props) => {
           messageType={activationMsgType}
         />
         {showResetPasswordSuccessBanner && <ResetPasswordSuccess />}
+        <h1>Hello</h1>
         <Form id="sign-in-form" name="sign-in-form">
           <FormGroup
             name="emailOrUsername"
