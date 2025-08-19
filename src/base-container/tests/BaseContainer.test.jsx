@@ -24,7 +24,6 @@ describe('Base component tests', () => {
     );
 
     expect(container.querySelector('.banner__image')).toBeNull();
-    expect(container.querySelector('.large-screen-svg-primary')).toBeDefined();
   });
 
   it('renders Image layout when ENABLE_IMAGE_LAYOUT configuration is enabled', () => {

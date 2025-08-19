@@ -194,6 +194,64 @@ $elevation-level-2-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.15);
   }
 }
 
+.btn-oa2-keycloak {
+  color: var(--pgn-color-white);
+  border-color: #007AFF;
+  background-color: #007AFF;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 12px 24px;
+  min-height: 56px;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+
+  .btn-tpa__font-container {
+    background-color: var(--pgn-color-white);
+    color: #007AFF;
+    border-radius: 50%;
+    margin: 0 12px 0 0;
+    padding: 8px;
+    min-width: 32px;
+ 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #provider-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: #0056CC;
+    border: 1px solid #0056CC;
+    color: var(--pgn-color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    
+    .btn-tpa__font-container {
+      background-color: var(--pgn-color-white);
+      color: #0056CC;
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+  }
+}
+
 .btn-oa2-azuread-oauth2 {
   color: var(--pgn-color-white);
   border-color: $microsoft-black;

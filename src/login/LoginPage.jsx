@@ -75,6 +75,7 @@ const LoginPage = (props) => {
   const [formFields, setFormFields] = useState({ ...backedUpFormData.formFields });
   const [errorCode, setErrorCode] = useState({ type: '', count: 0, context: {} });
   const [errors, setErrors] = useState({ ...backedUpFormData.errors });
+  const [isFormExpanded, setIsFormExpanded] = useState(false);
   const tpaHint = getTpaHint();
 
   useEffect(() => {
@@ -174,6 +175,10 @@ const LoginPage = (props) => {
     sendTrackEvent('edx.bi.password-reset_form.toggled', { category: 'user-engagement' });
   };
 
+  const toggleFormAccordion = () => {
+    setIsFormExpanded(!isFormExpanded);
+  };
+
   const { provider, skipHintedLogin } = getTpaProvider(tpaHint, providers, secondaryProviders);
 
   if (tpaHint) {
@@ -210,73 +215,116 @@ const LoginPage = (props) => {
         finishAuthUrl={finishAuthUrl}
       />
       <div className="mw-xs mt-3 mb-2">
-        <LoginFailureMessage
-          errorCode={errorCode.type}
-          errorCount={errorCode.count}
-          context={errorCode.context}
-        />
-        <ThirdPartyAuthAlert
-          currentProvider={currentProvider}
-          platformName={platformName}
-        />
-        <AccountActivationMessage
-          messageType={activationMsgType}
-        />
-        {showResetPasswordSuccessBanner && <ResetPasswordSuccess />}
-        <h1>Hello</h1>
-        <Form id="sign-in-form" name="sign-in-form">
-          <FormGroup
-            name="emailOrUsername"
-            value={formFields.emailOrUsername}
-            autoComplete="on"
-            handleChange={handleOnChange}
-            handleFocus={handleOnFocus}
-            errorMessage={errors.emailOrUsername}
-            floatingLabel={formatMessage(messages['login.user.identity.label'])}
-          />
-          <PasswordField
-            name="password"
-            value={formFields.password}
-            autoComplete="off"
-            showScreenReaderText={false}
-            showRequirements={false}
-            handleChange={handleOnChange}
-            handleFocus={handleOnFocus}
-            errorMessage={errors.password}
-            floatingLabel={formatMessage(messages['login.password.label'])}
-          />
-          <StatefulButton
-            name="sign-in"
-            id="sign-in"
-            type="submit"
-            variant="brand"
-            className="login-button-width"
-            state={submitState}
-            labels={{
-              default: formatMessage(messages['sign.in.button']),
-              pending: '',
-            }}
-            onClick={handleSubmit}
-            onMouseDown={(event) => event.preventDefault()}
-          />
-          <Link
-            id="forgot-password"
-            name="forgot-password"
-            className="btn btn-link font-weight-500 text-body"
-            to={updatePathWithQueryParams(RESET_PAGE)}
-            onClick={trackForgotPasswordLinkClick}
-          >
-            {formatMessage(messages['forgot.password'])}
-          </Link>
-          <ThirdPartyAuth
-            currentProvider={currentProvider}
-            providers={providers}
-            secondaryProviders={secondaryProviders}
-            handleInstitutionLogin={handleInstitutionLogin}
-            thirdPartyAuthApiStatus={thirdPartyAuthApiStatus}
-            isLoginPage
-          />
-        </Form>
+        <div className="login-card">
+          <div className="login-header">
+            <div className="security-icon"></div>
+            <p className="security-text">Пожалуйста, подтвердите свою личность для безопасности.</p>
+          </div>
+          
+          <div className="login-body">
+            <h2 className="login-title">
+              <div className="title-icon"></div>
+              Вход в систему
+            </h2>
+            
+            <LoginFailureMessage
+              errorCode={errorCode.type}
+              errorCount={errorCode.count}
+              context={errorCode.context}
+            />
+            <ThirdPartyAuthAlert
+              currentProvider={currentProvider}
+              platformName={platformName}
+            />
+            <AccountActivationMessage
+              messageType={activationMsgType}
+            />
+            {showResetPasswordSuccessBanner && <ResetPasswordSuccess />}
+                   {/* ThirdPartyAuth всегда видимый */}
+                   <ThirdPartyAuth
+              currentProvider={currentProvider}
+              providers={providers}
+              secondaryProviders={secondaryProviders}
+              handleInstitutionLogin={handleInstitutionLogin}
+              thirdPartyAuthApiStatus={thirdPartyAuthApiStatus}
+              isLoginPage
+            />
+            <Form id="sign-in-form" name="sign-in-form">
+              {/* Accordion toggle */}
+              <div className="accordion-toggle" onClick={toggleFormAccordion}>
+                <span className="toggle-text">
+                  {isFormExpanded ? 'Скрыть форму входа' : 'Показать форму входа'}
+                </span>
+                <svg 
+                  className={`toggle-icon ${isFormExpanded ? 'rotated' : ''}`}
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M7 10l5 5 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              
+              {/* Accordion content */}
+              <div className={`accordion-content ${isFormExpanded ? 'expanded' : ''}`}>
+                <div className="form-group">
+                  <label htmlFor="emailOrUsername">Логин</label>
+                  <FormGroup
+                    name="emailOrUsername"
+                    value={formFields.emailOrUsername}
+                    autoComplete="on"
+                    handleChange={handleOnChange}
+                    handleFocus={handleOnFocus}
+                    errorMessage={errors.emailOrUsername}
+                    floatingLabel={formatMessage(messages['login.user.identity.label'])}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="password">Пароль</label>
+                  <PasswordField
+                    name="password"
+                    value={formFields.password}
+                    autoComplete="off"
+                    showScreenReaderText={false}
+                    showRequirements={false}
+                    handleChange={handleOnChange}
+                    handleFocus={handleOnFocus}
+                    errorMessage={errors.password}
+                    floatingLabel={formatMessage(messages['login.password.label'])}
+                  />
+                </div>
+                
+                <StatefulButton
+                  name="sign-in"
+                  id="sign-in"
+                  type="submit"
+                  variant="brand"
+                  className="btn btn-login"
+                  state={submitState}
+                  labels={{
+                    default: formatMessage(messages['sign.in.button']),
+                    pending: '',
+                  }}
+                  onClick={handleSubmit}
+                  onMouseDown={(event) => event.preventDefault()}
+                />
+                
+                <Link
+                  id="forgot-password"
+                  name="forgot-password"
+                  className="forgot-password"
+                  to={updatePathWithQueryParams(RESET_PAGE)}
+                  onClick={trackForgotPasswordLinkClick}
+                >
+                  {formatMessage(messages['forgot.password'])}
+                </Link>
+              </div>
+            </Form>
+            
+     
+          </div>
+        </div>
       </div>
     </>
   );
