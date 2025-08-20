@@ -270,7 +270,7 @@ const LoginPage = (props) => {
               {/* Accordion content */}
               <div className={`accordion-content ${isFormExpanded ? 'expanded' : ''}`}>
                 <div className="form-group">
-                  <label htmlFor="emailOrUsername">Логин</label>
+              
                   <FormGroup
                     name="emailOrUsername"
                     value={formFields.emailOrUsername}
@@ -283,7 +283,7 @@ const LoginPage = (props) => {
                 </div>
                 
                 <div className="form-group">
-                  <label htmlFor="password">Пароль</label>
+                 
                   <PasswordField
                     name="password"
                     value={formFields.password}
@@ -312,7 +312,7 @@ const LoginPage = (props) => {
                   onMouseDown={(event) => event.preventDefault()}
                 />
                 
-                <Link
+                {/* <Link
                   id="forgot-password"
                   name="forgot-password"
                   className="forgot-password"
@@ -320,7 +320,7 @@ const LoginPage = (props) => {
                   onClick={trackForgotPasswordLinkClick}
                 >
                   {formatMessage(messages['forgot.password'])}
-                </Link>
+                </Link> */}
               </div>
             </Form>
             
