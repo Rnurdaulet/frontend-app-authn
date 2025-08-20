@@ -72,7 +72,7 @@ const Logistration = (props) => {
             <>
               <div id="main-content" className="main-content">
                 {!institutionLogin && (
-                  <h3 className="mb-4.5">{formatMessage(messages['logistration.sign.in'])}</h3>
+                  <h3 className="mb-4.5 d-none">{formatMessage(messages['logistration.sign.in'])}</h3>
                 )}
                 <LoginPage institutionLogin={institutionLogin} handleInstitutionLogin={handleInstitutionLogin} />
               </div>
@@ -82,7 +82,7 @@ const Logistration = (props) => {
             <div>
               <div id="main-content" className="main-content">
                 {!institutionLogin && !isValidTpaHint() && hideRegistrationLink && (
-                  <h3 className="mb-4.5">
+                  <h3 className="mb-4.5 d-none">
                     {formatMessage(messages[selectedPage === LOGIN_PAGE ? 'logistration.sign.in' : 'logistration.register'])}
                   </h3>
                 )}

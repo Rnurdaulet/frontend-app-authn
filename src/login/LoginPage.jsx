@@ -43,6 +43,8 @@ import {
   updatePathWithQueryParams,
 } from '../data/utils';
 import ResetPasswordSuccess from '../reset-password/ResetPasswordSuccess';
+import birdIcon from '../assets/img/bird.svg';
+import shieldIcon from '../assets/img/shield.svg';
 
 const LoginPage = (props) => {
   const {
@@ -217,13 +219,13 @@ const LoginPage = (props) => {
       <div className="mw-xs mt-3 mb-2">
         <div className="login-card">
           <div className="login-header">
-            <div className="security-icon"></div>
-            <p className="security-text">Пожалуйста, подтвердите свою личность для безопасности.</p>
+         
+            <p className="security-text">  <img  className="security-icon" src={shieldIcon} alt="Shield icon" />Пожалуйста, подтвердите свою личность для безопасности.</p>
           </div>
           
           <div className="login-body">
             <h2 className="login-title">
-              <div className="title-icon"></div>
+            <img  className="title-icon" src={birdIcon} alt="Bird icon" />
               Вход в систему
             </h2>
             

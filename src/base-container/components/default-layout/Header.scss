@@ -1,0 +1,17 @@
+.header {
+  width: 100%;
+  background: #15171E;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.logo-orleu {
+  height: 20px;
+  width: auto;
+  margin-left: 10rem;
+}
