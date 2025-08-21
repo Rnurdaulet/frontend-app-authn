@@ -15,11 +15,23 @@ import messages from './i18n';
 import MainApp from './MainApp';
 import { getPreferredLanguage, getPreferredLanguageReadOnly } from './utils/cookies';
 
+// Нормализация локали к поддерживаемым ключам сообщений
+const normalizeLocale = (rawLocale) => {
+  if (!rawLocale) { return 'en'; }
+  const lc = String(rawLocale).replace('_', '-').toLowerCase();
+  // алиасы и сокращения → поддерживаемые ключи
+  if (lc === 'kk' || lc === 'kk-kz' || lc === 'kk-kz'.toLowerCase()) { return 'kk-kz'; }
+  if (lc === 'ru' || lc.startsWith('ru-')) { return 'ru'; }
+  if (lc === 'en' || lc.startsWith('en-')) { return 'en'; }
+  return ['en', 'ru', 'kk-kz'].includes(lc) ? lc : 'en';
+};
+
 // Функция для конфигурации i18n
 const configureAppI18n = (locale) => {
+  const finalLocale = normalizeLocale(locale);
   console.log('=== Configuring i18n ===');
   console.log('Current URL:', window.location.href);
-  console.log('Final locale for i18n configuration:', locale);
+  console.log('Final locale for i18n configuration:', finalLocale);
   
   configureI18n({
     config: {
@@ -31,7 +43,7 @@ const configureAppI18n = (locale) => {
       logInfo: console.log,
     },
     messages,
-    locale,
+    locale: finalLocale,
   });
 };
 
@@ -40,7 +52,7 @@ subscribe(APP_READY, () => {
   console.log('=== APP_READY: Initial i18n setup ===');
   
   const supportedLocales = ['en', 'ru', 'kk-kz'];
-  const locale = getPreferredLanguage(supportedLocales);
+  const locale = normalizeLocale(getPreferredLanguage(supportedLocales));
   
   // Настраиваем i18n
   configureAppI18n(locale);
@@ -55,7 +67,7 @@ subscribe(APP_READY, () => {
   
   // Слушатель для изменений языка через кастомные события
   const handleLanguageChange = (event) => {
-    const newLocale = event.detail.locale;
+    const newLocale = normalizeLocale(event.detail.locale);
     console.log('=== Language change event received ===');
     console.log('New locale:', newLocale);
     
@@ -69,7 +81,7 @@ subscribe(APP_READY, () => {
   // Добавляем резервный механизм проверки изменения языка через cookie (только чтение!)
   let currentLocale = locale;
   const fallbackWatcher = setInterval(() => {
-    const newLocale = getPreferredLanguageReadOnly(supportedLocales);
+    const newLocale = normalizeLocale(getPreferredLanguageReadOnly(supportedLocales));
     if (newLocale !== currentLocale) {
       console.log('=== Fallback: Language change detected via cookie ===');
       console.log('Old locale:', currentLocale);
