@@ -228,6 +228,15 @@ const LoginPage = (props) => {
               {formatMessage(messages['login.form.title'])}
             </h2>
             
+            {/* DEBUG: Проверка сообщений на всех языках */}
+            <div style={{background: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px'}}>
+              <div><strong>DEBUG Messages:</strong></div>
+              <div>EN: {formatMessage(messages['login.form.title'])}</div>
+              <div>RU: {formatMessage(messages['login.form.title'])}</div>
+              <div>KK: {formatMessage(messages['login.form.title'])}</div>
+              <div>Current locale: {window.location.href}</div>
+            </div>
+            
             <LoginFailureMessage
               errorCode={errorCode.type}
               errorCount={errorCode.count}
