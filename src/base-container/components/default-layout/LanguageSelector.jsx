@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Dropdown } from '@openedx/paragon';
 import { getLocale } from '@edx/frontend-platform/i18n';
 import { setCookie, getCookie } from '../../../utils/cookies';
 
@@ -9,9 +8,9 @@ const LanguageSelector = () => {
   const currentLocale = getLocale();
   
   const languages = [
-    { code: 'en', name: 'English', nativeName: 'English' },
-    { code: 'ru', name: 'Russian', nativeName: 'Русский' },
-    { code: 'kk-kz', name: 'Kazakh', nativeName: 'Қазақша' },
+    { code: 'en', name: 'English', nativeName: 'English', shortName: 'Eng' },
+    { code: 'ru', name: 'Russian', nativeName: 'Русский', shortName: 'Рус' },
+    { code: 'kk-kz', name: 'Kazakh', nativeName: 'Қазақша', shortName: 'Қаз' },
   ];
 
   // Больше не нужно отслеживать URL, так как используем cookies
@@ -53,29 +52,18 @@ const LanguageSelector = () => {
 
   return (
     <div className="language-selector">
-      <Dropdown className="language-dropdown">
-        <Dropdown.Toggle
-          variant="outline-primary"
-          id="language-dropdown"
-          className="language-toggle"
-        >
-          🌐 <span className="language-display">{currentLanguage.nativeName}</span>
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu>
-          {languages.map((language) => (
-            <Dropdown.Item
-              key={language.code}
-              onClick={() => handleLanguageChange(language.code)}
-              active={language.code === currentLanguage.code}
-              className="language-item"
-            >
-              <span className="language-native">{language.nativeName}</span>
-              <span className="language-english"> ({language.name})</span>
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      </Dropdown>
+      <div className="language-buttons">
+        {languages.map((language) => (
+          <button
+            key={language.code}
+            onClick={() => handleLanguageChange(language.code)}
+            className={`language-button ${language.code === currentLanguage.code ? 'active' : ''}`}
+            title={language.nativeName}
+          >
+            {language.shortName}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
