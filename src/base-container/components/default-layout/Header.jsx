@@ -4,13 +4,14 @@ import { Hyperlink, Image } from '@openedx/paragon';
 
 import './Header.scss';
 import logo from '../../../assets/img/logo.svg';
+import LanguageSelector from './LanguageSelector';
 
 const Header = () => {
   return (
     <header className="header">
       <div className="container">
         <div className="row">
-          <div className="col-12">
+          <div className="col-12 header-content">
             <Hyperlink destination={getConfig().MARKETING_SITE_BASE_URL}>
               <Image 
                 className="logo-orleu" 
@@ -18,6 +19,7 @@ const Header = () => {
                 src={logo} 
               />
             </Hyperlink>
+            <LanguageSelector />
           </div>
         </div>
       </div>

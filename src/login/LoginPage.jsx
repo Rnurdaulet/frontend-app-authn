@@ -226,7 +226,7 @@ const LoginPage = (props) => {
           <div className="login-body">
             <h2 className="login-title">
             <img  className="title-icon" src={birdIcon} alt="Bird icon" />
-              Вход в систему
+              {formatMessage(messages['login.form.title'])}
             </h2>
             
             <LoginFailureMessage
@@ -255,7 +255,10 @@ const LoginPage = (props) => {
               {/* Accordion toggle */}
               <div className="accordion-toggle" onClick={toggleFormAccordion}>
                 <span className="toggle-text">
-                  {isFormExpanded ? 'Скрыть форму входа' : 'Показать форму входа'}
+                  {isFormExpanded 
+                    ? formatMessage(messages['login.form.toggle.hide']) 
+                    : formatMessage(messages['login.form.toggle.show'])
+                  }
                 </span>
                 <svg 
                   className={`toggle-icon ${isFormExpanded ? 'rotated' : ''}`}

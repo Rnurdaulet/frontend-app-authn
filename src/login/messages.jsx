@@ -206,6 +206,21 @@ const messages = defineMessages({
         + '{lineBreak}{lineBreak}Error Details:{lineBreak}{errorMessage}',
     description: 'Error message third party authentication pipeline fails',
   },
+  'login.form.title': {
+    id: 'login.form.title',
+    defaultMessage: 'Sign in to system',
+    description: 'Title for login form',
+  },
+  'login.form.toggle.hide': {
+    id: 'login.form.toggle.hide',
+    defaultMessage: 'Hide login form',
+    description: 'Text for hiding login form toggle',
+  },
+  'login.form.toggle.show': {
+    id: 'login.form.toggle.show',
+    defaultMessage: 'Show login form',
+    description: 'Text for showing login form toggle',
+  },
 });
 
 export default messages;
