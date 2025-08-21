@@ -23,21 +23,38 @@ export const getCookie = (name) => {
  * @returns {string} домен для cookies или пустая строка для localhost
  */
 export const getCookieDomain = () => {
+  // Автоматическое определение домена
+  const hostname = window.location.hostname;
+  
+  // Для localhost и IP адресов ВСЕГДА не указываем домен, даже если он настроен в конфигурации
+  if (hostname === 'localhost' || 
+      hostname === '127.0.0.1' || 
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('172.')) {
+    console.log('Cookie domain: localhost/IP (no domain - overriding config)');
+    return '';
+  }
+  
   // Используем стандартную конфигурацию OpenedX для домена cookies (если установлена)
   const configuredDomain = getConfig().SESSION_COOKIE_DOMAIN;
   
-  if (configuredDomain && configuredDomain !== null && configuredDomain !== '') {
+  if (configuredDomain && 
+      configuredDomain !== null && 
+      configuredDomain !== '' && 
+      configuredDomain !== 'localhost' &&
+      configuredDomain !== '127.0.0.1') {
     console.log(`Cookie domain: Using configured domain - ; domain=${configuredDomain}`);
     return `; domain=${configuredDomain}`;
   }
   
-  // Автоматическое определение домена
-  const hostname = window.location.hostname;
-  
-  // Для localhost и IP адресов не указываем домен
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-    console.log('Cookie domain: localhost/IP (no domain)');
-    return '';
+  // Специальные случаи для локальной разработки
+  if (hostname.includes('local.openedx.io') || 
+      hostname.includes('apps.local.openedx.io') ||
+      hostname.includes('studio.local.openedx.io')) {
+    const domain = `; domain=.local.openedx.io`;
+    console.log(`Cookie domain: Local OpenedX development - ${domain}`);
+    return domain;
   }
   
   // Разделяем hostname на части
@@ -61,13 +78,6 @@ export const getCookieDomain = () => {
         console.log(`Cookie domain: OpenedX pattern detected - ${domain}`);
         return domain;
       }
-    }
-    
-    // Если openedx не найден, но есть специальные паттерны для локальной разработки
-    if (hostname.includes('local.openedx.io')) {
-      domain = `; domain=.local.openedx.io`;
-      console.log(`Cookie domain: Local OpenedX development - ${domain}`);
-      return domain;
     }
   }
   
@@ -196,7 +206,118 @@ export const cleanupDuplicateCookies = () => {
 };
 
 /**
- * Получить предпочитаемый язык пользователя
+ * Проверить, действительно ли cookie установлен правильно
+ * @param {string} name - имя cookie
+ * @param {string} expectedValue - ожидаемое значение
+ * @returns {boolean} true если cookie установлен правильно
+ */
+export const verifyCookie = (name, expectedValue) => {
+  const actualValue = getCookie(name);
+  const isValid = actualValue === expectedValue;
+  
+  if (!isValid) {
+    console.warn(`Cookie verification failed: expected "${expectedValue}", got "${actualValue}"`);
+  }
+  
+  return isValid;
+};
+
+/**
+ * Принудительно установить cookie с максимальной совместимостью
+ * @param {string} name - имя cookie
+ * @param {string} value - значение cookie
+ * @param {number} days - количество дней до истечения
+ */
+export const forceSetCookie = (name, value, days = 365) => {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+  const expiresString = expires.toUTCString();
+  
+  const domain = getCookieDomain();
+  
+  console.log(`Setting cookie: ${name}=${value} with domain: ${domain || '(no domain)'}`);
+  
+  // Устанавливаем cookie с доменом (если есть)
+  if (domain) {
+    document.cookie = `${name}=${value}; expires=${expiresString}; path=/${domain}; SameSite=Lax`;
+  } else {
+    // Для localhost устанавливаем без домена
+    document.cookie = `${name}=${value}; expires=${expiresString}; path=/; SameSite=Lax`;
+  }
+  
+  // Немедленная проверка установки cookie
+  const isSet = verifyCookie(name, value);
+  
+  if (!isSet) {
+    console.warn('Cookie setting failed with SameSite=Lax, trying alternative method...');
+    // Пробуем альтернативный способ без SameSite
+    if (domain) {
+      document.cookie = `${name}=${value}; expires=${expiresString}; path=/${domain}`;
+    } else {
+      document.cookie = `${name}=${value}; expires=${expiresString}; path=/`;
+    }
+    
+    // Проверяем второй раз
+    setTimeout(() => {
+      const isSetNow = verifyCookie(name, value);
+      if (isSetNow) {
+        console.log('✅ Cookie set successfully with alternative method');
+      } else {
+        console.error('❌ Cookie setting failed completely');
+      }
+    }, 50);
+  } else {
+    console.log('✅ Cookie set successfully');
+  }
+};
+
+/**
+ * Получить предпочитаемый язык пользователя БЕЗ установки cookies (только чтение)
+ * @param {string[]} supportedLocales - массив поддерживаемых локалей
+ * @returns {string} код языка
+ */
+export const getPreferredLanguageReadOnly = (supportedLocales = ['en', 'ru', 'kk-kz']) => {
+  const cookieName = 'openedx-language-preference';
+  
+  // 1. Проверяем cookie (ПРИОРИТЕТ - сохраненные предпочтения пользователя)
+  const cookieLocale = getCookie(cookieName);
+  if (cookieLocale && supportedLocales.includes(cookieLocale)) {
+    console.log('Reading language from cookie:', cookieLocale);
+    return cookieLocale;
+  }
+  
+  // 2. Проверяем URL параметр (только если нет cookie)
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlLocale = urlParams.get('locale');
+  if (urlLocale && supportedLocales.includes(urlLocale)) {
+    console.log('Reading language from URL (no cookie found):', urlLocale);
+    return urlLocale;
+  }
+  
+  // 3. Проверяем браузерный язык (только для первого визита)
+  const browserLang = navigator.language || navigator.userLanguage;
+  if (browserLang) {
+    const browserLocale = browserLang.toLowerCase();
+    // Точное совпадение
+    if (supportedLocales.includes(browserLocale)) {
+      console.log('Reading browser language:', browserLocale);
+      return browserLocale;
+    }
+    // Проверяем базовую локаль (например, 'ru' из 'ru-RU')
+    const baseLang = browserLocale.split('-')[0];
+    if (supportedLocales.includes(baseLang)) {
+      console.log('Reading browser base language:', baseLang);
+      return baseLang;
+    }
+  }
+  
+  // 4. По умолчанию возвращаем английский
+  console.log('Using default language: en');
+  return 'en';
+};
+
+/**
+ * Получить предпочитаемый язык пользователя с установкой cookies при необходимости
  * @param {string[]} supportedLocales - массив поддерживаемых локалей
  * @returns {string} код языка
  */
@@ -216,7 +337,7 @@ export const getPreferredLanguage = (supportedLocales = ['en', 'ru', 'kk-kz']) =
   if (urlLocale && supportedLocales.includes(urlLocale)) {
     console.log('Using language from URL (no cookie found):', urlLocale);
     // Сохраняем выбор в cookie только если его не было
-    setCookie(cookieName, urlLocale);
+    forceSetCookie(cookieName, urlLocale);
     return urlLocale;
   }
   
@@ -227,14 +348,14 @@ export const getPreferredLanguage = (supportedLocales = ['en', 'ru', 'kk-kz']) =
     // Точное совпадение
     if (supportedLocales.includes(browserLocale)) {
       console.log('Using browser language:', browserLocale);
-      setCookie(cookieName, browserLocale);
+      forceSetCookie(cookieName, browserLocale);
       return browserLocale;
     }
     // Проверяем базовую локаль (например, 'ru' из 'ru-RU')
     const baseLang = browserLocale.split('-')[0];
     if (supportedLocales.includes(baseLang)) {
       console.log('Using browser base language:', baseLang);
-      setCookie(cookieName, baseLang);
+      forceSetCookie(cookieName, baseLang);
       return baseLang;
     }
   }
