@@ -1,6 +1,6 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { getLocale } from '@edx/frontend-platform/i18n';
-import { forceSetCookie, getCookie, cleanupDuplicateCookies, verifyCookie } from '../../../utils/cookies';
+import { forceSetCookie, getCookie, verifyCookie } from '../../../utils/cookies';
 
 import './LanguageSelector.scss';
 
@@ -12,11 +12,6 @@ const LanguageSelector = () => {
     { code: 'ru', name: 'Russian', nativeName: 'Русский', shortName: 'Рус' },
     { code: 'kk-kz', name: 'Kazakh', nativeName: 'Қазақша', shortName: 'Қаз' },
   ];
-
-  // Очищаем дублирующие cookies при инициализации компонента
-  useEffect(() => {
-    cleanupDuplicateCookies();
-  }, []);
 
   // Больше не нужно отслеживать URL, так как используем cookies
 
@@ -36,17 +31,8 @@ const LanguageSelector = () => {
   }, [currentLocale, languages]);
 
   const handleLanguageChange = (langCode) => {
-    console.log('=== LanguageSelector: User selecting language ===');
-    console.log('Selected language:', langCode);
-    console.log('Current cookie before change:', getCookie('openedx-language-preference'));
-    
-    // Сначала очищаем все дублирующие cookies
-    cleanupDuplicateCookies();
-    
-    // Устанавливаем cookie для языка с принудительной проверкой
+    // Устанавливаем cookie для языка
     forceSetCookie('openedx-language-preference', langCode);
-    
-    console.log('Cookie set to:', langCode);
     
     // Отправляем кастомное событие для уведомления об изменении языка
     const languageChangeEvent = new CustomEvent('languageChanged', { 
@@ -63,28 +49,15 @@ const LanguageSelector = () => {
       window.history.replaceState({}, '', url.toString());
     }
     
-    // Проверяем, что cookie установился корректно перед перезагрузкой
+    // Небольшая задержка и перезагрузка страницы
     setTimeout(() => {
-      const cookieValue = getCookie('openedx-language-preference');
       if (verifyCookie('openedx-language-preference', langCode)) {
-        console.log('✅ Cookie verified successfully, reloading page...');
         window.location.reload();
       } else {
-        console.warn(`⚠️ Cookie verification failed. Expected: ${langCode}, Got: ${cookieValue}`);
-        console.log('⚠️ Page reload delayed to allow cookie to be set properly...');
-        
-        // Даем еще одну попытку перед принудительной перезагрузкой
-        setTimeout(() => {
-          const finalCookieValue = getCookie('openedx-language-preference');
-          if (finalCookieValue === langCode) {
-            console.log('✅ Cookie finally set correctly, reloading page...');
-          } else {
-            console.warn(`⚠️ Cookie still not set correctly: ${finalCookieValue}, but reloading anyway...`);
-          }
-          window.location.reload();
-        }, 300);
+        // пробуем без проверки
+        window.location.reload();
       }
-    }, 200);
+    }, 150);
   };
 
   return (
