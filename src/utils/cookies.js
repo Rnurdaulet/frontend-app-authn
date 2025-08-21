@@ -23,20 +23,20 @@ export const getCookie = (name) => {
  * @returns {string} домен для cookies или пустая строка для localhost
  */
 export const getCookieDomain = () => {
-  // Используем стандартную конфигурацию OpenedX для домена cookies
+  // Используем стандартную конфигурацию OpenedX для домена cookies (если установлена)
   const configuredDomain = getConfig().SESSION_COOKIE_DOMAIN;
   
-  if (configuredDomain) {
+  if (configuredDomain && configuredDomain !== null && configuredDomain !== '') {
     console.log(`Cookie domain: Using configured domain - ; domain=${configuredDomain}`);
     return `; domain=${configuredDomain}`;
   }
   
-  // Fallback: автоматическое определение домена для локальной разработки
+  // Автоматическое определение домена
   const hostname = window.location.hostname;
   
-  // Для localhost не указываем домен
+  // Для localhost и IP адресов не указываем домен
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-    console.log('Cookie domain: localhost (no domain)');
+    console.log('Cookie domain: localhost/IP (no domain)');
     return '';
   }
   
@@ -51,17 +51,30 @@ export const getCookieDomain = () => {
   
   let domain = '';
   
-  // Для доменов вида *.openedx.domain.com возвращаем .openedx.domain.com
-  if (parts.length >= 3 && parts[parts.length - 3] === 'openedx') {
-    domain = `; domain=.${parts.slice(-3).join('.')}`;
-    console.log(`Cookie domain: OpenedX subdomain auto-detected - ${domain}`);
-    return domain;
+  // Специальная логика для OpenedX доменов
+  if (parts.length >= 3) {
+    // Проверяем различные паттерны OpenedX
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (parts[i] === 'openedx') {
+        // Найден openedx в домене - берем от openedx до конца
+        domain = `; domain=.${parts.slice(i).join('.')}`;
+        console.log(`Cookie domain: OpenedX pattern detected - ${domain}`);
+        return domain;
+      }
+    }
+    
+    // Если openedx не найден, но есть специальные паттерны для локальной разработки
+    if (hostname.includes('local.openedx.io')) {
+      domain = `; domain=.local.openedx.io`;
+      console.log(`Cookie domain: Local OpenedX development - ${domain}`);
+      return domain;
+    }
   }
   
-  // Для обычных доменов берем последние 2 части (domain.com)
+  // Для обычных доменов берем последние 2 части (domain.tld)
   if (parts.length >= 2) {
     domain = `; domain=.${parts.slice(-2).join('.')}`;
-    console.log(`Cookie domain: Standard domain auto-detected - ${domain}`);
+    console.log(`Cookie domain: Standard domain - ${domain}`);
     return domain;
   }
   
@@ -106,47 +119,80 @@ export const cleanupDuplicateCookies = () => {
   const cookieName = 'openedx-language-preference';
   const currentValue = getCookie(cookieName);
   
-  if (currentValue) {
-    console.log('Cleaning up duplicate cookies, preserving value:', currentValue);
+  console.log('🧹 Starting aggressive cookie cleanup...');
+  console.log('Current cookie value:', currentValue);
+  
+  // Удаляем текущий cookie через стандартную функцию
+  deleteCookie(cookieName);
+  
+  // Агрессивная очистка всех возможных вариантов cookies
+  const hostname = window.location.hostname;
+  const aggressiveCleanupDomains = [];
+  
+  if (hostname.includes('.')) {
+    const parts = hostname.split('.');
     
-    // Удаляем текущий cookie через стандартную функцию
-    deleteCookie(cookieName);
-    
-    // Дополнительная очистка: удаляем возможные старые cookies с различными доменами
-    const hostname = window.location.hostname;
-    const possibleDomains = [];
-    
-    if (hostname.includes('.')) {
-      const parts = hostname.split('.');
-      
-      // Добавляем возможные варианты доменов для очистки старых cookies
-      if (parts.length >= 2) {
-        possibleDomains.push(`.${parts.slice(-2).join('.')}`); // .domain.tld
+    // Добавляем все возможные комбинации доменов для максимальной очистки
+    for (let i = 0; i < parts.length; i++) {
+      if (i < parts.length - 1) {
+        // Создаем варианты с точкой в начале (.domain.tld, .sub.domain.tld)
+        aggressiveCleanupDomains.push(`.${parts.slice(i).join('.')}`);
+        
+        // Создаем варианты без точки (domain.tld, sub.domain.tld)
+        aggressiveCleanupDomains.push(parts.slice(i).join('.'));
       }
-      if (parts.length >= 3) {
-        possibleDomains.push(`.${parts.slice(-3).join('.')}`); // .subdomain.domain.tld
-      }
-      if (parts.length >= 4) {
-        possibleDomains.push(`.${parts.slice(-4).join('.')}`); // .sub.subdomain.domain.tld
-      }
-      
-      // Также пытаемся удалить cookie для конкретного хоста
-      possibleDomains.push(hostname);
     }
     
-    // Удаляем cookies для всех возможных доменов
-    possibleDomains.forEach(domain => {
-      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
-      console.log(`Attempting to delete cookie for domain: ${domain}`);
-    });
+    // Специально для случая apps.openedx.orleu.edu.kz
+    if (hostname.includes('openedx.orleu.edu.kz')) {
+      aggressiveCleanupDomains.push('apps.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('.apps.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('studio.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('.studio.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('preview.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('.preview.openedx.orleu.edu.kz');
+      aggressiveCleanupDomains.push('.orleu.edu.kz'); // старый вариант
+    }
     
-    // Устанавливаем правильный cookie с использованием стандартной конфигурации
-    setCookie(cookieName, currentValue);
-    
-    console.log('Cookie cleanup completed, set new cookie with proper domain');
-  } else {
-    console.log('No language preference cookie found, skipping cleanup');
+    // Добавляем текущий hostname
+    aggressiveCleanupDomains.push(hostname);
   }
+  
+  // Удаляем дублирующие записи
+  const uniqueDomains = [...new Set(aggressiveCleanupDomains)];
+  
+  console.log('🗑️ Attempting to delete cookies for domains:', uniqueDomains);
+  
+  // Удаляем cookies для всех возможных доменов
+  uniqueDomains.forEach(domain => {
+    // Пробуем удалить с указанным доменом
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain};`;
+    
+    // Пробуем удалить с SameSite=Lax (как в старом cookie)
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}; SameSite=Lax;`;
+    
+    // Пробуем удалить с SameSite=None (как в старом cookie)
+    document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}; SameSite=None;`;
+    
+    console.log(`💣 Nuked cookie for domain: ${domain}`);
+  });
+  
+  // Дополнительная зачистка - удаляем без указания домена
+  document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`;
+  document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None;`;
+  
+  console.log('🔥 Performed final cleanup without domain specification');
+  
+  // Устанавливаем правильный cookie с использованием стандартной конфигурации
+  if (currentValue) {
+    setCookie(cookieName, currentValue);
+    console.log('✅ Set new cookie with proper domain:', currentValue);
+  } else {
+    console.log('ℹ️ No previous value found, skipping cookie restoration');
+  }
+  
+  console.log('🎯 Aggressive cookie cleanup completed');
 };
 
 /**

@@ -1,6 +1,6 @@
 const configuration = {
   // Cookies related configs
-  SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN,
+  SESSION_COOKIE_DOMAIN: process.env.SESSION_COOKIE_DOMAIN || null,
   USER_RETENTION_COOKIE_NAME: process.env.USER_RETENTION_COOKIE_NAME || '',
   // Features
   DISABLE_ENTERPRISE_LOGIN: process.env.DISABLE_ENTERPRISE_LOGIN || '',
