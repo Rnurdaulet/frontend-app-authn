@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { getLocale } from '@edx/frontend-platform/i18n';
-import { setCookie, getCookie } from '../../../utils/cookies';
+import { setCookie, getCookie, cleanupDuplicateCookies } from '../../../utils/cookies';
 
 import './LanguageSelector.scss';
 
@@ -12,6 +12,11 @@ const LanguageSelector = () => {
     { code: 'ru', name: 'Russian', nativeName: 'Русский', shortName: 'Рус' },
     { code: 'kk-kz', name: 'Kazakh', nativeName: 'Қазақша', shortName: 'Қаз' },
   ];
+
+  // Очищаем дублирующие cookies при инициализации компонента
+  useEffect(() => {
+    cleanupDuplicateCookies();
+  }, []);
 
   // Больше не нужно отслеживать URL, так как используем cookies
 
@@ -35,7 +40,10 @@ const LanguageSelector = () => {
     console.log('Selected language:', langCode);
     console.log('Current cookie before change:', getCookie('openedx-language-preference'));
     
-    // Устанавливаем cookie для языка
+    // Сначала очищаем все дублирующие cookies
+    cleanupDuplicateCookies();
+    
+    // Устанавливаем cookie для языка с правильным доменом
     setCookie('openedx-language-preference', langCode);
     
     console.log('Cookie set to:', langCode);
