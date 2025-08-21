@@ -221,6 +221,11 @@ const messages = defineMessages({
     defaultMessage: 'Show login form',
     description: 'Text for showing login form toggle',
   },
+  'login.orleu.instruction': {
+    id: 'login.orleu.instruction',
+    defaultMessage: 'Sign in with Orleu ID to continue',
+    description: 'Instruction text for Orleu ID login',
+  },
 });
 
 export default messages;

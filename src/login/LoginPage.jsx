@@ -219,8 +219,7 @@ const LoginPage = (props) => {
       <div className="mw-xs mt-3 mb-2">
         <div className="login-card">
           <div className="login-header">
-         
-            <p className="security-text">  <img  className="security-icon" src={shieldIcon} alt="Shield icon" />Пожалуйста, подтвердите свою личность для безопасности.</p>
+            <p className="security-text">  <img  className="security-icon" src={shieldIcon} alt="Shield icon" />{formatMessage(messages['login.orleu.instruction'])}</p>
           </div>
           
           <div className="login-body">
