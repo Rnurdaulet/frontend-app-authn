@@ -4,13 +4,13 @@
       <title><%= (process.env.SITE_NAME && process.env.SITE_NAME != 'null') ? 'Authentication | ' + process.env.SITE_NAME : 'Authentication' %></title>    
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="shortcut icon" href="<%=htmlWebpackPlugin.options.FAVICON_URL%>" type="image/x-icon"/>
-      
+      <!-- <link rel="shortcut icon" href="<%=htmlWebpackPlugin.options.FAVICON_URL%>" type="image/x-icon"/> -->
+      <link rel="shortcut icon" href="<%= require('../src/assets/favicon.ico').default %>" type="image/x-icon"/> 
       <!-- Google Fonts - Inter  -->
       
       <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.4.4/iframeResizer.contentWindow.min.js"
               integrity="sha512-IWwZFBvHzN41wNI6etRLLuLrDDj/6AwJcPt7cmKJAzluYTIHHQ1PF8wh0rSy05jxEvvjflVvH2MxeV6riyEEXg=="
               crossorigin="anonymous"
