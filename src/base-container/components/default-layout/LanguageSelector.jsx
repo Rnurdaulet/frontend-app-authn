@@ -62,18 +62,15 @@ const LanguageSelector = () => {
 
   return (
     <div className="language-selector">
-      <div className="language-buttons">
-        {languages.map((language) => (
-          <button
-            key={language.code}
-            onClick={() => handleLanguageChange(language.code)}
-            className={`language-button ${language.code === currentLanguage.code ? 'active' : ''}`}
-            title={language.nativeName}
-          >
-            {language.shortName}
-          </button>
-        ))}
-      </div>
+      {languages.map((language, index) => (
+        <span
+          key={language.code}
+          onClick={() => handleLanguageChange(language.code)}
+          className={`language-item ${language.code === currentLanguage.code ? 'active' : ''}`}
+        >
+          {language.shortName}
+        </span>
+      ))}
     </div>
   );
 };

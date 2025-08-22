@@ -14,11 +14,12 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    padding: 0 2rem; // Добавляем одинаковые отступы с обеих сторон
   }
 }
 
 .logo-orleu {
   height: 20px;
   width: auto;
-  margin-left: 10rem;
+  // Убираем margin-left, так как теперь используем padding в header-content
 }

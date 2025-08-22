@@ -82,6 +82,7 @@ body {
     align-items: center;
     word-wrap: break-word;
     position: relative;
+    margin-top: 20px;
 }
 
 .title-icon {
@@ -128,11 +129,16 @@ body {
     font-size: 18px;
     font-weight: 700;
     margin-top: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .btn-login:hover {
     background: #0056d6;
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    transition: all 0.3s ease;
 }
 
 .forgot-password {
@@ -154,7 +160,7 @@ body {
 .accordion-toggle {
     background: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 8px;
+    border-radius: 16px;
     padding: 12px 20px;
     margin-bottom: 20px;
     cursor: pointer;
@@ -201,6 +207,6 @@ body {
     }
     
     .login-card {
-        margin: 10px;
+        margin-bottom: 2rem;
     }
 }

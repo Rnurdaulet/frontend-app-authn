@@ -1,58 +1,26 @@
 .language-selector {
-  .language-buttons {
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
+  text-align: right;
+  
+  .language-item {
+    color: #64656B;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    word-wrap: break-word;
+    cursor: pointer;
+    margin-right: 12px; // Эквивалент трем пробелам
     
-    .language-button {
-      background-color: transparent;
-      border: 1px solid #dee2e6;
-      color: #495057;
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 0.375rem 0.75rem;
-      border-radius: 0.25rem;
-      cursor: pointer;
-      transition: all 0.15s ease-in-out;
-      min-width: 40px;
-      
-      &:hover {
-        background-color: #f8f9fa;
-        border-color: #007bff;
-        color: #007bff;
-      }
-      
-      &:focus {
-        outline: none;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-      }
-      
-      &.active {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-        
-        &:hover {
-          background-color: #0056b3;
-          border-color: #0056b3;
-          color: white;
-        }
-      }
+    &:last-child {
+      margin-right: 0;
     }
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 767px) {
-  .language-selector {
-    .language-buttons {
-      gap: 0.125rem;
-      
-      .language-button {
-        font-size: 0.625rem;
-        padding: 0.25rem 0.5rem;
-        min-width: 35px;
-      }
+    
+    &.active {
+      color: #F0F0F0;
+      text-decoration: underline;
+    }
+    
+    &:hover {
+      opacity: 0.8;
     }
   }
 }
