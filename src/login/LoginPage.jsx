@@ -227,8 +227,6 @@ const LoginPage = (props) => {
             <img  className="title-icon" src={birdIcon} alt="Bird icon" />
               {formatMessage(messages['login.form.title'])}
             </h2>
-            
-            
             <LoginFailureMessage
               errorCode={errorCode.type}
               errorCount={errorCode.count}

@@ -1,10 +1,13 @@
 import React from 'react';
 import { getConfig } from '@edx/frontend-platform';
 import { Hyperlink } from '@openedx/paragon';
+import { useIntl } from '@edx/frontend-platform/i18n';
 
 import './Footer.scss';
 
 const Footer = () => {
+  const { formatMessage } = useIntl();
+  
   return (
     <footer className="footer">
       <div className="container">
@@ -12,10 +15,13 @@ const Footer = () => {
           <div className="col-12">
             <div className="footer-content">
               <p className="footer-copyright">
-                Все права защищены © 2025 Национальный центр повышения квалификации «Өрлеу»
+                {formatMessage({
+                  id: 'footer.copyright',
+                  defaultMessage: 'Все права защищены © 2025 Национальный центр повышения квалификации «Өрлеу»'
+                })}
               </p>
               <Hyperlink destination="https://orleu.edu.kz" className="footer-link">
-                © 2025 — orleu.edu.kz
+                orleu.edu.kz
               </Hyperlink>
             </div>
           </div>

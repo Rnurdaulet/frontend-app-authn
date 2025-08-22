@@ -181,5 +181,6 @@
   "login.form.title": "Sign in to system",
   "login.form.toggle.hide": "Hide login form",
   "login.form.toggle.show": "Show login form",
-  "login.orleu.instruction": "Sign in with Orleu ID to continue"
+  "login.orleu.instruction": "Sign in with Orleu ID to continue",
+  "footer.copyright": "All rights reserved © 2025 National Center for Professional Development «Orleu»"
 }

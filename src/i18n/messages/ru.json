@@ -181,5 +181,6 @@
   "login.form.title": "Вход в систему",
   "login.form.toggle.hide": "Скрыть форму входа",
   "login.form.toggle.show": "Показать форму входа",
-  "login.orleu.instruction": "Войдите через Orleu ID для продолжения"
+  "login.orleu.instruction": "Войдите через Orleu ID для продолжения",
+  "footer.copyright": "Все права защищены © 2025 Национальный центр повышения квалификации «Өрлеу»"
 }

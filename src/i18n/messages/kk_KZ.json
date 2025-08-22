@@ -181,5 +181,6 @@
   "login.form.title": "Жүйеге кіру",
   "login.form.toggle.hide": "Кіру формасын жасыру",
   "login.form.toggle.show": "Кіру формасын көрсету",
-  "login.orleu.instruction": "Жалғастыру үшін Orleu ID арқылы кіріңіз"
+  "login.orleu.instruction": "Жалғастыру үшін Orleu ID арқылы кіріңіз",
+  "footer.copyright": "Барлық құқықтар қорғалған © 2025 Біліктілікті арттыру ұлттық орталығы «Өрлеу»"
 }
